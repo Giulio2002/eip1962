@@ -12,7 +12,6 @@ mod traits;
 mod representation;
 mod field;
 mod fp;
-mod weierstrass;
 mod mont_inverse;
 mod multiexp;
 mod extension_towers;
@@ -27,6 +26,7 @@ mod engines;
 
 pub mod public_interface;
 
+pub mod weierstrass;
 #[cfg(feature = "gas_metering")]
 pub mod gas_meter;
 
