@@ -11,7 +11,7 @@ use super::decode_utils::{split, decode_group_order_with_length};
 
 use crate::errors::ApiError;
 
-pub(crate) fn parse_group_order_from_encoding<
+pub fn parse_group_order_from_encoding<
     'a
     >(encoding: &'a [u8]) -> Result<(usize, MaxGroupSizeUint, &'a [u8]), ApiError>
 {
@@ -23,7 +23,7 @@ pub(crate) fn parse_group_order_from_encoding<
     Ok((order_len, order, rest))
 }
 
-pub(crate) fn parse_ab_in_base_field_from_encoding<
+pub fn parse_ab_in_base_field_from_encoding<
     'a,
     FE: ElementRepr,
     F: SizedPrimeField<Repr = FE>

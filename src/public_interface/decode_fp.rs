@@ -11,7 +11,7 @@ use crate::errors::ApiError;
 use super::decode_utils::*;
 use crate::field::field_from_modulus;
 
-pub(crate) fn parse_base_field_from_encoding<
+pub fn parse_base_field_from_encoding<
     'a,
     FE: ElementRepr,
     >(encoding: &'a [u8]) -> Result<(PrimeField<FE>, usize, MaxFieldUint, &'a [u8]), ApiError>
