@@ -107,7 +107,7 @@ pub(crate) fn decode_boolean<
     Ok((boolean, rest))
 }
 
-pub(crate) fn parse_modulus_and_length<
+pub fn parse_modulus_and_length<
     'a
     >
     (
@@ -191,7 +191,7 @@ pub(crate) fn get_base_field_params(bytes: &[u8]) -> Result<((MaxFieldUint, usiz
     Ok(((modulus, modulus_len), rest))
 }
 
-pub(crate) fn num_limbs_for_modulus(modulus: &MaxFieldUint) -> Result<usize, ApiError> {
+pub fn num_limbs_for_modulus(modulus: &MaxFieldUint) -> Result<usize, ApiError> {
     use crate::field::calculate_num_limbs;
 
     let modulus_limbs = calculate_num_limbs(modulus.bits())
