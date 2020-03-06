@@ -2,55 +2,55 @@ use eth_pairings_repr_derive::*;
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "4"]
-struct U256(U256Repr);
+pub struct U256(U256Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "5"]
-struct U320(U320Repr);
+pub struct U320(U320Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "6"]
-struct U384(U384Repr); 
+pub struct U384(U384Repr); 
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "7"]
-struct U448(U448Repr);
+pub struct U448(U448Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "8"]
-struct U512(U512Repr);
+pub struct U512(U512Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "9"]
-struct U576(U576Repr);
+pub struct U576(U576Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "10"]
-struct U640(U640Repr);
+pub struct U640(U640Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "11"]
-struct U704(U704Repr);
+pub struct U704(U704Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "12"]
-struct U768(U768Repr);
+pub struct U768(U768Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "13"]
-struct U832(U832Repr);
+pub struct U832(U832Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "14"]
-struct U896(U896Repr);
+pub struct U896(U896Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "15"]
-struct U960(U960Repr);
+pub struct U960(U960Repr);
 
 #[derive(ElementRepresentation)]
 #[NumberOfLimbs = "16"]
-struct U1024(U1024Repr);
+pub struct U1024(U1024Repr);
 
 /// PrimeField is a structure that it instantiated at the runtime 
 /// and holds all the necessary information for further arithmetic

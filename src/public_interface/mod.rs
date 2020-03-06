@@ -1,7 +1,7 @@
 pub mod decode_g1;
 pub(crate) mod decode_g2;
 pub mod decode_fp;
-pub(crate) mod decode_utils;
+pub mod decode_utils;
 
 #[macro_use]
 pub(crate) mod api_specialization_macro;
