@@ -4,15 +4,15 @@ use super::CurveParameters;
 use crate::traits::ZeroAndOne;
 
 pub struct WeierstrassCurve<'a, C: CurveParameters> {
-    pub(crate) a: C::BaseFieldElement,
-    pub(crate) b: C::BaseFieldElement,
+    pub a: C::BaseFieldElement,
+    pub b: C::BaseFieldElement,
     pub(crate) curve_type: CurveType,
     pub(crate) subgroup_order_repr: &'a [u64],
     pub(crate) params: &'a C
 }
 
 impl<'a, C: CurveParameters> WeierstrassCurve<'a, C> {
-    pub(crate) fn new(
+    pub fn new(
         subgroup_order: &'a [u64],
         a: C::BaseFieldElement, 
         b: C::BaseFieldElement,
