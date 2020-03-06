@@ -29,7 +29,6 @@ pub mod public_interface;
 pub mod weierstrass;
 #[cfg(feature = "gas_metering")]
 pub mod gas_meter;
-pub mod field
 #[cfg(feature = "external_tests")]
 pub mod external_tests;
 
