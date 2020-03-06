@@ -10,7 +10,7 @@ extern crate fixed_width_group_and_loop;
 mod arithmetics;
 mod traits;
 pub mod representation;
-mod field;
+pub mod field;
 mod fp;
 mod mont_inverse;
 mod multiexp;
