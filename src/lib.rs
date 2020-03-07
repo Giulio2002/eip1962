@@ -23,17 +23,16 @@ mod features;
 mod wnaf;
 pub mod square_root;
 mod engines;
-
+pub mod fuzz;
 pub mod public_interface;
 
 pub mod weierstrass;
 #[cfg(feature = "gas_metering")]
 pub mod gas_meter;
+#[cfg(test)]
+pub mod test;
 #[cfg(feature = "external_tests")]
 pub mod external_tests;
-
-#[cfg(test)]
-mod test;
 
 #[cfg(all(feature = "benchmarks", test))]
 mod bench;

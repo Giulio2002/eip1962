@@ -1,2 +1,2 @@
-mod group;
+pub mod group;
 mod pairing;

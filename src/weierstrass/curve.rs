@@ -7,7 +7,7 @@ pub struct WeierstrassCurve<'a, C: CurveParameters> {
     pub a: C::BaseFieldElement,
     pub b: C::BaseFieldElement,
     pub(crate) curve_type: CurveType,
-    pub(crate) subgroup_order_repr: &'a [u64],
+    pub subgroup_order_repr: &'a [u64],
     pub params: &'a C
 }
 
