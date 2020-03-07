@@ -32,7 +32,6 @@ pub trait G1Api {
     fn add_points(bytes: &[u8]) -> Result<Vec<u8>, ApiError>;
     fn mul_point(bytes: &[u8]) -> Result<Vec<u8>, ApiError>;
     fn multiexp(bytes: &[u8]) -> Result<Vec<u8>, ApiError>;
-    fn fuzz(bytes: &[u8]) -> Result<(), ApiError>{Ok(())}
 }
 
 pub struct G1ApiImplementation<FE: ElementRepr> {

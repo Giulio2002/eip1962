@@ -27,7 +27,7 @@ pub fn parse_base_field_from_encoding<
     Ok((field, modulus_len, modulus, rest))
 }
 
-pub(crate) fn decode_fp<
+pub fn decode_fp<
     'a,
     FE: ElementRepr,
     F: SizedPrimeField<Repr = FE>

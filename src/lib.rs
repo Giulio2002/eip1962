@@ -11,7 +11,7 @@ mod arithmetics;
 mod traits;
 pub mod representation;
 pub mod field;
-mod fp;
+pub mod fp;
 mod mont_inverse;
 mod multiexp;
 mod extension_towers;
@@ -21,7 +21,7 @@ mod errors;
 mod integers;
 mod features;
 mod wnaf;
-mod square_root;
+pub mod square_root;
 mod engines;
 
 pub mod public_interface;

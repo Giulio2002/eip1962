@@ -4,7 +4,7 @@ pub mod decode_fp;
 pub mod decode_utils;
 
 #[macro_use]
-pub(crate) mod api_specialization_macro;
+pub mod api_specialization_macro;
 
 mod g1_ops;
 mod g2_ops;
