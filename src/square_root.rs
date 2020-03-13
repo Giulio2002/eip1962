@@ -176,3 +176,36 @@ pub(crate) fn sqrt_ext2<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(elemen
         None
     }
 }
+
+fn sqrt_for_three_mod_four_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(element: &Fp<'a, E, F>) -> Result<Fp<'a, E, F>, ApiError> {
+    // this is a simple case: we compute the power 
+    // we know that it's 3 mod 4, so just bit shift
+
+    let mut modulus_minus_three_by_four = *element.field.modulus();
+    modulus_minus_three_by_four.shr(2);
+
+    let mut a = element.pow(&modulus_minus_three_by_four.as_ref());
+
+    let mut minus_one = Fp::one(element.field);
+    minus_one.negate();
+
+    let mut tmp = a.clone();
+    tmp.square();
+    tmp.mul_assign(&element);
+
+    if tmp == minus_one {
+        panic!("not 3 mod 4");
+    } else {
+        a.mul_assign(&element);
+
+        Ok(a)
+    }
+}
+
+pub(crate) fn sqrt_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(element: Fp<'a, E, F>) -> Result<Fp<'a, E, F>, ApiError> {
+    if modulus_is_three_mod_four(element.field) {
+        sqrt_for_three_mod_four_result(&element)
+    } else {
+        panic!("Not 3 mod 4")
+    }
+}

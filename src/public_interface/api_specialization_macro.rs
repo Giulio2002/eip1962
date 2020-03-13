@@ -1,4 +1,3 @@
-
 #[macro_export]
 macro_rules! expand_for_modulus_limbs {
     ($modulus_limbs: expr, $implementation: tt, $argument: expr, $func: tt) => {
