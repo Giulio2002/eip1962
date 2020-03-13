@@ -238,7 +238,7 @@ pub struct FuzzG1Api;
 
 impl Fuzzer for FuzzG1Api {
     fn fuzz(bytes: &[u8]) -> Result<(), ApiError> {
-        let (_, modulus, _) = public_interface::decode_utils::parse_modulus_and_length(&bytes)?;
+        let (_, modulus, _) = public_interface::decode_utils::parse_modulus_and_length(&bytes[1..])?;
         let modulus_limbs = public_interface::decode_utils::num_limbs_for_modulus(&modulus)?;
 
         expand_for_modulus_limbs!(modulus_limbs, Fuzz, bytes, fuzz); 
