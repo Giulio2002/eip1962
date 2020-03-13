@@ -4,6 +4,7 @@ use crate::field::*;
 use crate::extension_towers::fp2::{Extension2, Fp2};
 use crate::traits::FieldElement;
 use crate::traits::ZeroAndOne;
+use crate::public_interface::{ApiError};
 
 pub(crate) fn modulus_is_one_mod_four<E: ElementRepr, F: SizedPrimeField<Repr = E>>(field: &F) -> bool {
     const MASK: u64 = 3; // last two bits
