@@ -210,3 +210,51 @@ pub(crate) fn sqrt_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(elem
         panic!("Not 3 mod 4")
     }
 }
+
+pub(crate) fn sqrt_for_three_mod_four_ext2_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(element: &Fp2<'a, E, F>) -> Result<Fp2<'a, E, F>, ApiError> {
+    // this is a simple case: we compute the power 
+    // we know that it's 3 mod 4, so just bit shifts by 1 or 2 bits are ok
+
+    if element.is_zero() {
+        Ok(element.clone())
+    } else {
+        let mut modulus_minus_three_by_four = *element.extension_field.field.modulus();
+        modulus_minus_three_by_four.shr(2);
+        let mut a1 = element.pow(&modulus_minus_three_by_four.as_ref());
+
+        let mut alpha = a1.clone();
+        alpha.square();
+        alpha.mul_assign(&element);
+
+        let mut a0 = alpha.clone();
+        a0.frobenius_map(1);
+        a0.mul_assign(&alpha);
+
+        let one_fp2 = Fp2::one(element.extension_field);
+
+        let mut minus_one_fp2 = one_fp2.clone();
+        minus_one_fp2.negate();
+
+        if a0 == minus_one_fp2 {
+            panic!("unimplemented")
+        } else {
+            a1.mul_assign(&element);
+
+            if alpha == minus_one_fp2 {
+                let mut tmp = Fp2::zero(element.extension_field);
+                tmp.c1 = Fp::one(element.extension_field.field);
+                a1.mul_assign(&tmp);
+            } else {
+                let mut modulus_minus_one_by_two = *element.extension_field.field.modulus();
+                modulus_minus_one_by_two.shr(1);
+
+                alpha.add_assign(&one_fp2);
+
+                alpha = alpha.pow(&modulus_minus_one_by_two.as_ref());
+                a1.mul_assign(&alpha);
+            }
+
+            Ok(a1)
+        }
+    }
+}

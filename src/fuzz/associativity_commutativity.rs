@@ -3,14 +3,11 @@ use crate::weierstrass::curve::{CurvePoint, WeierstrassCurve};
 use crate::representation::{ElementRepr};
 use crate::field::*;
 use crate::public_interface;
-use crate::public_interface::api_specialization_macro;
-use crate::square_root;
-use crate::fp::{Fp};
 use crate::public_interface::{ApiError};
 use crate::traits::{FieldElement};
 use crate::traits::ZeroAndOne;
-use crate::integers::MaxGroupSizeUint;
 use crate::square_root::*;
+use crate::integers::{MaxFieldUint, MaxGroupSizeUint, MaxLoopParametersUint};
 
 macro_rules! expand_for_modulus_limbs {
     ($modulus_limbs: expr, $implementation: tt, $argument: expr, $func: tt) => {
@@ -62,14 +59,16 @@ macro_rules! expand_for_modulus_limbs {
     }
 }
 // Testing Part
-pub(crate) struct ArithmeticProcessor<
+pub(crate) struct Tester<
     'a, 
     'b: 'a, 
     FE: FieldElement + ZeroAndOne + 'a,
     CP: CurveParameters<BaseFieldElement = FE> + 'a
 > {
     curve: &'b WeierstrassCurve<'a, CP>,
-    generator: &'b CurvePoint<'a, CP>,
+    a: &'b CurvePoint<'a, CP>,
+    b: &'b CurvePoint<'a, CP>,
+    c: &'b CurvePoint<'a, CP>,
     group_order: &'b [u64],
 }
 
@@ -78,21 +77,22 @@ impl<
     'b: 'a, 
     FE: FieldElement + ZeroAndOne + 'a,
     CP: CurveParameters<BaseFieldElement = FE> + 'a
-> ArithmeticProcessor<'a, 'b, FE, CP> {
+> Tester<'a, 'b, FE, CP> {
+
     fn a_plus_a_equal_to_2a(&self) {
-        let mut a_plus_a = self.generator.clone();
-        let other_a = self.generator.clone();
+        let mut a_plus_a = self.a.clone();
+        let other_a = self.a.clone();
         a_plus_a.add_assign(&other_a);
 
-        let mut two_a = self.generator.clone();
+        let mut two_a = self.a.clone();
         two_a.double();
 
         assert_eq!(a_plus_a.into_xy(), two_a.into_xy());
     }
 
     fn a_minus_a_equal_zero(&self) {
-        let mut a_minus_a = self.generator.clone();
-        let mut minus_a = self.generator.clone();
+        let mut a_minus_a = self.a.clone();
+        let mut minus_a = self.a.clone();
         minus_a.negate();
 
         a_minus_a.add_assign(&minus_a);
@@ -101,19 +101,19 @@ impl<
     }
 
     fn two_a_is_equal_to_two_a(&self) {
-        let mut two_a = self.generator.clone();
+        let mut two_a = self.a.clone();
         two_a.double();
 
-        let other_two_a = self.generator.mul(&[2u64]);
+        let other_two_a = self.a.mul(&[2u64]);
 
         assert_eq!(other_two_a.into_xy(), two_a.into_xy());
     }
 
     fn three_a_is_equal_to_three_a(&self) {
-        let mut two_a = self.generator.clone();
+        let mut two_a = self.a.clone();
         two_a.double();
 
-        let a = self.generator.clone();
+        let a = self.a.clone();
 
         let mut t0 = two_a.clone();
         t0.add_assign(&a);
@@ -121,17 +121,15 @@ impl<
         let mut t1 = a.clone();
         t1.add_assign(&two_a);
 
-        let t2 = self.generator.mul(&[3u64]);
+        let t2 = self.a.mul(&[3u64]);
 
         assert_eq!(t0.into_xy(), t1.into_xy());
         assert_eq!(t0.into_xy(), t2.into_xy());
     }
 
     fn a_plus_b_equal_to_b_plus_a(&self) {
-        let mut b = self.generator.clone();
-        b.double();
-
-        let a = self.generator.clone();
+        let mut b = self.b.clone();
+        let a = self.a.clone();
 
         let mut a_plus_b = a.clone();
         a_plus_b.add_assign(&b);
@@ -143,13 +141,13 @@ impl<
     }
 
     fn a_mul_by_zero_is_zero(&self) {
-        let a = self.generator.mul(&[0u64]);
+        let a = self.a.mul(&[0u64]);
 
         assert!(a.is_zero());
     }
 
     fn a_mul_by_group_order_is_zero(&self) {
-        let a = self.generator.mul(&self.group_order);
+        let a = self.a.mul(&self.group_order);
 
         assert!(a.is_zero());
     }
@@ -158,8 +156,8 @@ impl<
         let scalar = MaxGroupSizeUint::from(&[12345][..]);
         let group_order = MaxGroupSizeUint::from(&self.group_order[..]);
         let scalar_plus_group_order = scalar + group_order;
-        let a = self.generator.mul(&scalar.as_ref());
-        let b = self.generator.mul(&scalar_plus_group_order.as_ref());
+        let a = self.a.mul(&scalar.as_ref());
+        let b = self.a.mul(&scalar_plus_group_order.as_ref());
 
         assert_eq!(a.into_xy(), b.into_xy());
     }
@@ -168,11 +166,29 @@ impl<
         let scalar = MaxGroupSizeUint::from(&[12345][..]);
         let group_order = MaxGroupSizeUint::from(&self.group_order[..]);
         let minus_scalar = group_order - scalar;
-        let a = self.generator.mul(&minus_scalar.as_ref());
-        let mut b = self.generator.mul(&scalar.as_ref());
+        let a = self.a.mul(&minus_scalar.as_ref());
+        let mut b = self.b.mul(&scalar.as_ref());
         b.negate();
 
         assert_eq!(a.into_xy(), b.into_xy());
+    }
+
+    fn associativity_a_b_c(&self) {
+        let a = self.a.clone();
+        let b = self.b.clone();
+        let c = self.c.clone();
+        // RHS = (B+C) + A
+        let mut b_plus_c = c.clone();
+        b_plus_c.add_assign(&b);
+        let mut rhs =  b_plus_c.clone();
+        rhs.add_assign(&a);
+        // LHS = (B+A) + C
+        let mut b_plus_a = a.clone();
+        b_plus_a.add_assign(&b);
+        let mut lhs =  b_plus_a.clone();
+        lhs.add_assign(&c);
+
+        assert_eq!(rhs.into_xy(), lhs.into_xy());        
     }
 
     pub fn test(&self) {
@@ -185,6 +201,7 @@ impl<
         self.a_mul_by_group_order_is_zero();
         self.a_mul_by_scalar_wraps_over_group_order();
         self.a_mul_by_minus_scalar();
+        self.associativity_a_b_c();
     }
 }
 
@@ -208,9 +225,8 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         let curve = WeierstrassCurve::new(&order.as_ref(), a, b, &fp_params).map_err(|_| {
             panic!("Curve shape is not supported")
         })?;
-        // Makes X coordinate
-        let (x, _) = public_interface::decode_fp::decode_fp(data, modulus_len, curve.params.params())?;
-        // Make Y coordinate
+        // Point A
+        let (x, rest) = public_interface::decode_fp::decode_fp(rest, modulus_len, curve.params.params())?;
         let mut y = curve.b.clone();
         let mut ax = x.clone();
         ax.mul_assign(&curve.a);
@@ -220,12 +236,38 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         x_3.mul_assign(&x);
         y.add_assign(&x_3);
         y = sqrt_result(y.clone())?;
+        let a = CurvePoint::point_from_xy(&curve, x, y);
+        // Point B
+        let (x, rest) = public_interface::decode_fp::decode_fp(rest, modulus_len, curve.params.params())?;
+        y = curve.b.clone();
+        ax = x.clone();
+        ax.mul_assign(&curve.a);
+        y.add_assign(&ax);
+        let mut x_3 = x.clone();
+        x_3.square();
+        x_3.mul_assign(&x);
+        y.add_assign(&x_3);
+        y = sqrt_result(y.clone())?;
+        let b = CurvePoint::point_from_xy(&curve, x, y);
+        // Point C
+        let (x, rest) = public_interface::decode_fp::decode_fp(rest, modulus_len, curve.params.params())?;
+        let mut y = curve.b.clone();
+        let mut ax = x.clone();
+        ax.mul_assign(&curve.a);
+        y.add_assign(&ax);
+        let mut x_3 = x.clone();
+        x_3.square();
+        x_3.mul_assign(&x);
+        y.add_assign(&x_3);
+        y = sqrt_result(y.clone())?;
+        let c = CurvePoint::point_from_xy(&curve, x, y);
         // Make Point Generator
-        let gen = CurvePoint::point_from_xy(&curve, x, y);
         // Test through ArithmeticProcessor
-        let tester = ArithmeticProcessor::<_, _>{
+        let tester = Tester::<_, _> {
             curve: &curve,
-            generator: &gen,
+            a: &a,
+            b: &b,
+            c: &c,
             group_order: &curve.subgroup_order_repr
         };
 
