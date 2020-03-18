@@ -218,7 +218,11 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
     
     fn fuzz(bytes: &[u8]) -> Result<(), ApiError> {
         let data = &bytes[1..];
-        let (field, modulus_len, _, rest) = public_interface::decode_fp::parse_base_field_from_encoding::<FE>(&data)?;
+        let (_, modulus_len, mut modulus, rest) = public_interface::decode_fp::parse_base_field_from_encoding::<FE>(&data)?;
+        modulus.as_mut()[0] = 3; // This is now 3 mod 4 (3&3 == 3)  
+        let field = field_from_modulus::<FE>(&modulus).map_err(|_| {
+            ApiError::InputError("Failed to create prime field from modulus".to_owned())
+        })?;      
         let (a, b, rest) = public_interface::decode_g1::parse_ab_in_base_field_from_encoding(&rest, 1, &field)?;
         let (_order_len, order, rest) = public_interface::decode_g1::parse_group_order_from_encoding(rest)?;
         let fp_params = CurveOverFpParameters::new(&field);

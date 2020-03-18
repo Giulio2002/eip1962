@@ -72,15 +72,24 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
     fn fuzz(bytes: &[u8]) -> Result<(), ApiError> {
         let data = &bytes[1..];
         // First Curve (G1)
-        let (field, modulus_len_1, _, rest) = public_interface::decode_fp::parse_base_field_from_encoding::<FE>(&data)?;
+        let (_, modulus_len_1, mut modulus, rest) = public_interface::decode_fp::parse_base_field_from_encoding::<FE>(&data)?;
+        modulus.as_mut()[0] = 3; // This is now 3 mod 4 (3&3 == 3)
+        let field = field_from_modulus::<FE>(&modulus).map_err(|_| {
+            ApiError::InputError("Failed to create prime field from modulus".to_owned())
+        })?;
         let (a, b, rest) = public_interface::decode_g1::parse_ab_in_base_field_from_encoding(&rest, 1, &field)?;
         let (_order_len, order, rest) = public_interface::decode_g1::parse_group_order_from_encoding(rest)?;
         let fp_params = CurveOverFpParameters::new(&field);
+
         let curve_g1 = WeierstrassCurve::new(&order.as_ref(), a, b, &fp_params).map_err(|_| {
             panic!("Curve shape is not supported")
         })?;
         // Second curve (G2)
-        let (field, modulus_len_2, modulus, rest) = public_interface::decode_fp::parse_base_field_from_encoding::<FE>(&data)?;
+        let (_,  modulus_len_2, mut modulus, rest) = public_interface::decode_fp::parse_base_field_from_encoding::<FE>(&data)?;
+        modulus.as_mut()[0] = 3; // This is now 3 mod 4 (3&3 == 3)
+        let field = field_from_modulus::<FE>(&modulus).map_err(|_| {
+            ApiError::InputError("Failed to create prime field from modulus".to_owned())
+        })?;
         let (extension_2, rest) = public_interface::decode_g2::create_fp2_extension(rest, &modulus, modulus_len_2, &field, false)?;
         let (a, b, rest) = public_interface::decode_g2::parse_ab_in_fp2_from_encoding(&rest, modulus_len_2, &extension_2)?;
         let (_order_len, order, rest) = public_interface::decode_g1::parse_group_order_from_encoding(rest)?;
