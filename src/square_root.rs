@@ -204,11 +204,7 @@ fn sqrt_for_three_mod_four_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = 
 }
 
 pub(crate) fn sqrt_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(element: Fp<'a, E, F>) -> Result<Fp<'a, E, F>, ApiError> {
-    if modulus_is_three_mod_four(element.field) {
-        sqrt_for_three_mod_four_result(&element)
-    } else {
-        panic!("Not 3 mod 4")
-    }
+    sqrt_for_three_mod_four_result(&element)
 }
 
 pub(crate) fn sqrt_for_three_mod_four_ext2_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(element: &Fp2<'a, E, F>) -> Result<Fp2<'a, E, F>, ApiError> {
