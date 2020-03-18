@@ -82,7 +82,7 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         let fp_params = CurveOverFpParameters::new(&field);
 
         let curve_g1 = WeierstrassCurve::new(&order.as_ref(), a, b, &fp_params).map_err(|_| {
-            panic!("Curve shape is not supported")
+            ApiError::InputError("Curve shape is not supported".to_owned())
         })?;
         // Second curve (G2)
         let (_,  modulus_len_2, mut modulus, rest) = public_interface::decode_fp::parse_base_field_from_encoding::<FE>(&data)?;
@@ -171,8 +171,8 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         
         let mut g_r = curve_g2.b.clone();
         let mut ax = x2_1.clone();
-        ax_g2.mul_assign(&curve_g2.a);
-        g_r.add_assign(&ax_g2);
+        ax.mul_assign(&curve_g2.a);
+        g_r.add_assign(&ax);
         let mut x_3 = x2_1.clone();
         x_3.square();
         x_3.mul_assign(&x2_1);

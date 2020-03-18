@@ -227,7 +227,7 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         let (_order_len, order, rest) = public_interface::decode_g1::parse_group_order_from_encoding(rest)?;
         let fp_params = CurveOverFpParameters::new(&field);
         let curve = WeierstrassCurve::new(&order.as_ref(), a, b, &fp_params).map_err(|_| {
-            panic!("Curve shape is not supported")
+            ApiError::InputError("Curve shape is not supported".to_owned())
         })?;
         // Point A
         let (x, rest) = public_interface::decode_fp::decode_fp(rest, modulus_len, curve.params.params())?;
