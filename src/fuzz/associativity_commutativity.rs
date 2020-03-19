@@ -51,10 +51,6 @@ macro_rules! expand_for_modulus_limbs {
             16 => {
                 $implementation::<U1024Repr>::$func($argument)
             },
-
-            field_limbs => {
-                unimplemented!("unimplemented for {} modulus limbs", field_limbs);
-            }
         }
     }
 }
