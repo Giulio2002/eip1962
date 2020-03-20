@@ -50,6 +50,9 @@ macro_rules! expand_for_modulus_limbs {
             16 => {
                 $implementation::<U1024Repr>::$func($argument)
             },
+            default => {
+                $implementation::<U1024Repr>::$func($argument)
+            }
         }
     }
 }
