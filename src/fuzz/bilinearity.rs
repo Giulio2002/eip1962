@@ -124,7 +124,7 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         x_3.mul_assign(&x_lhs);
         lhs.add_assign(&x_3);
         lhs = sqrt_result(lhs.clone())?;   
-        
+
         let mut g_r = curve_g1.b.clone();
         let mut ax = x1_1.clone();
         ax.mul_assign(&curve_g1.a);
@@ -148,7 +148,7 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         let mut rhs = g_r2.clone();
         rhs.mul_assign(&g_r);
 
-        assert!(rhs == lhs);
+        assert_eq!(rhs, lhs);        
         // Multipliers (m_1, m_2)
         let (m_1, rest) = public_interface::decode_fp::decode_fp2(rest, modulus_len_2, curve_g2.params.params())?;
         let (m_2, _) = public_interface::decode_fp::decode_fp2(rest, modulus_len_2, curve_g2.params.params())?;
@@ -191,7 +191,7 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         let mut rhs = g_r2.clone();
         rhs.mul_assign(&g_r);
 
-        assert!(rhs == lhs);
+        assert_eq!(rhs, lhs);        
         Ok(())
     }
 }

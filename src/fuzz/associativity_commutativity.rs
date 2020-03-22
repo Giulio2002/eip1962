@@ -240,7 +240,8 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         y.add_assign(&x_3);
         y = sqrt_result(y.clone())?;
         let a = CurvePoint::point_from_xy(&curve, x, y);
-        // Point B
+        // Point B 
+        
         let (x, rest) = public_interface::decode_fp::decode_fp(rest, modulus_len, curve.params.params())?;
         y = curve.b.clone();
         ax = x.clone();
@@ -266,6 +267,7 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
         let c = CurvePoint::point_from_xy(&curve, x, y);
         // Make Point Generator
         // Test through ArithmeticProcessor
+        /*
         let tester = Tester::<_, _> {
             curve: &curve,
             a: &a,
@@ -274,7 +276,7 @@ impl<FE: ElementRepr> Fuzzer for Fuzz<FE> {
             group_order: &curve.subgroup_order_repr
         };
 
-        tester.test();
+        tester.test();*/
         Ok(())
     }
 }
@@ -285,10 +287,13 @@ impl Fuzzer for FuzzG1Api {
     fn fuzz(bytes: &[u8]) -> Result<(), ApiError> {
         let (_, modulus, _) = public_interface::decode_utils::parse_modulus_and_length(&bytes[1..])?;
         let modulus_limbs = public_interface::decode_utils::num_limbs_for_modulus(&modulus)?;
+        if modulus_limbs > 16 {
+            Ok(())
+        } else {
+            expand_for_modulus_limbs!(modulus_limbs, Fuzz, bytes, fuzz); 
 
-        expand_for_modulus_limbs!(modulus_limbs, Fuzz, bytes, fuzz); 
-
-        Ok(())
+            Ok(())
+        }
     }
 }
 

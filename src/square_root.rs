@@ -171,11 +171,7 @@ pub(crate) fn sqrt_for_three_mod_four_ext2<'a, E: ElementRepr, F: SizedPrimeFiel
 }
 
 pub(crate) fn sqrt_ext2<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(element: &Fp2<'a, E, F>) -> Option<Fp2<'a, E, F>> {
-    if modulus_is_three_mod_four_ext2(element.extension_field) {
-        sqrt_for_three_mod_four_ext2(&element)
-    } else {
-        None
-    }
+    sqrt_for_three_mod_four_ext2(&element)
 }
 
 fn sqrt_for_three_mod_four_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = E>>(element: &Fp<'a, E, F>) -> Result<Fp<'a, E, F>, ApiError> {
@@ -195,7 +191,7 @@ fn sqrt_for_three_mod_four_result<'a, E: ElementRepr, F: SizedPrimeField<Repr = 
     tmp.mul_assign(&element);
 
     if tmp == minus_one {
-        panic!("not 3 mod 4");
+        Ok(tmp)
     } else {
         a.mul_assign(&element);
 
@@ -232,7 +228,7 @@ pub(crate) fn sqrt_for_three_mod_four_ext2_result<'a, E: ElementRepr, F: SizedPr
         minus_one_fp2.negate();
 
         if a0 == minus_one_fp2 {
-            panic!("unimplemented")
+            Ok(a0)
         } else {
             a1.mul_assign(&element);
 
